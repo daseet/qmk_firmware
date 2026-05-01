@@ -48,12 +48,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [1] = LAYOUT(
-        RGB_TOG, 		_______,   _______, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, _______, KC_INS,             _______,
+        RM_TOGG, 		_______,   _______, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, _______, KC_INS,             _______,
         _______, 		_______,   _______, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, _______, _______,          	_______,
-        _______, 		_______,   RGB_VAI, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, _______, QK_BOOT,            _______,
-        _______, 		RGB_SAD,   RGB_VAD, RGB_SAI, _______,  _______,  _______, _______, _______, _______, _______, _______,          _______,          	_______,
-        _______, 		_______,   _______, _______, _______,  _______,  NK_TOGG, _______, _______, _______, _______,          _______, RGB_SPI, 		    _______,
-        _______, 		_______,   _______,                              RGB_M_P,                   _______, _______, _______, RGB_RMOD, RGB_SPD, RGB_MOD
+        _______, 		_______,   RM_VALU, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, _______, QK_BOOT,            _______,
+        _______, 		RM_SATD,   RM_VALD, RM_SATU, _______,  _______,  _______, _______, _______, _______, _______, _______,          _______,          	_______,
+        _______, 		_______,   _______, _______, _______,  _______,  NK_TOGG, _______, _______, _______, _______,          _______, RM_SPDU, 		    _______,
+        _______, 		_______,   _______,                              _______,                   _______, _______, _______, RM_PREV, RM_SPDD, RM_NEXT
     ),
 
 	[2] = LAYOUT(
@@ -70,7 +70,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [1] = { ENCODER_CCW_CW(RGB_HUD, RGB_HUI) },
+    [1] = { ENCODER_CCW_CW(RM_HUED, RM_HUEU) },
     [2] = { ENCODER_CCW_CW(KC_F23, KC_F24) }
 };
 #endif
@@ -79,37 +79,38 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 #ifdef RGB_MATRIX_ENABLE
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-	// Turn off side LED if caps lock is enabled
-	if (host_keyboard_led_state().caps_lock) {
-        for (uint8_t i=0; i<sizeof(LED_SIDE_LEFT)/sizeof(LED_SIDE_LEFT[0]); i++) {
-                rgb_matrix_set_color(LED_SIDE_LEFT[i], RGB_OFF);
-            }
-		for (uint8_t i=0; i<sizeof(LED_SIDE_RIGHT)/sizeof(LED_SIDE_RIGHT[0]); i++) {
-                rgb_matrix_set_color(LED_SIDE_RIGHT[i], RGB_OFF);
-            }
+    // Set side LED if caps lock is enabled
+    if (host_keyboard_led_state().caps_lock) {
+        for (uint8_t i = 0; i < sizeof(LED_SIDE_LEFT) / sizeof(LED_SIDE_LEFT[0]); i++) {
+            rgb_matrix_set_color(LED_SIDE_LEFT[i], RGB_WHITE);
+        }
+        for (uint8_t i = 0; i < sizeof(LED_SIDE_RIGHT) / sizeof(LED_SIDE_RIGHT[0]); i++) {
+            rgb_matrix_set_color(LED_SIDE_RIGHT[i], RGB_WHITE);
+        }
     }
 
-    switch(get_highest_layer(layer_state)){
-        // Set side LED to white while caps lock is held
+    switch (get_highest_layer(layer_state)) {
+        // Set side LED to OFF while caps lock is held
         case 2:
-        for (uint8_t i=0; i<sizeof(LED_SIDE_LEFT)/sizeof(LED_SIDE_LEFT[0]); i++) {
-                rgb_matrix_set_color(LED_SIDE_LEFT[i], RGB_WHITE);
+            for (uint8_t i = 0; i < sizeof(LED_SIDE_LEFT) / sizeof(LED_SIDE_LEFT[0]); i++) {
+                rgb_matrix_set_color(LED_SIDE_LEFT[i], RGB_OFF);
             }
-		for (uint8_t i=0; i<sizeof(LED_SIDE_RIGHT)/sizeof(LED_SIDE_RIGHT[0]); i++) {
-                rgb_matrix_set_color(LED_SIDE_RIGHT[i], RGB_WHITE);
+            for (uint8_t i = 0; i < sizeof(LED_SIDE_RIGHT) / sizeof(LED_SIDE_RIGHT[0]); i++) {
+                rgb_matrix_set_color(LED_SIDE_RIGHT[i], RGB_OFF);
             }
-        break;
-        // Turn off all key LED by default
-        default:
-            for (uint8_t i=0; i<sizeof(LED_KEYS)/sizeof(LED_KEYS[0]); i++) {
-                    rgb_matrix_set_color(LED_KEYS[i], RGB_OFF);
-                }
             break;
-        break;
+            // Turn off all key LED by default
+            // default:
+            //     for (uint8_t i = 0; i < sizeof(LED_KEYS) / sizeof(LED_KEYS[0]); i++) {
+            //         rgb_matrix_set_color(LED_KEYS[i], RGB_OFF);
+            //     }
+            //     break;
     };
+    for (uint8_t i = 0; i < sizeof(LED_KEYS) / sizeof(LED_KEYS[0]); i++) {
+        rgb_matrix_set_color(LED_KEYS[i], RGB_OFF);
+    }
     return false;
 };
-
 
 void suspend_power_down_user(void) {
         rgb_matrix_set_suspend_state(true);
